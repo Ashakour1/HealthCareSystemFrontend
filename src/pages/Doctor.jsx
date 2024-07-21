@@ -115,7 +115,9 @@ const Doctor = () => {
   );
 
   return (
+    
     <div className="w-full p-4">
+
       <Card>
         <CardHeader className="text-blue-600">
           <CardTitle>Doctors</CardTitle>
