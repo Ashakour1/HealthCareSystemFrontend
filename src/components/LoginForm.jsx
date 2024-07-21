@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,31 +11,49 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import axios from "axios";
+import toast from "react-hot-toast";
+import { useUser } from "../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { user, login } = useUser();
+
+  const redirectTo = location.search.split("/")[1];
+
+  useEffect(() => {
+    if (user) {
+      redirectTo ? navigate(`/${redirectTo}`) : navigate("/dashboard");
+    }
+  }, [user, redirectTo]);
+
+  const navigate = useNavigate();
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/admins/login", {
-        email,
-        password,
-      });
-      if (response.data.success) {
-        setSuccess(response.data.message);
-        setError("");
-      } else {
-        setError(response.data.message);
-        setSuccess("");
-      }
+      const response = await axios.post(
+        "http://localhost:3000/api/admins/login",
+        formData
+      );
+
+    console.log(response.data);
+      login(response.data.data);
+      navigate("/dashboard");
+
+      toast.success(response.data.message);
     } catch (error) {
-      setError("An error occurred. Please try again.");
-      setSuccess("");
+      toast.error(error.response.data.message);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   return (
@@ -55,8 +73,8 @@ const LoginForm = () => {
                 <Input
                   id="email"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
@@ -65,25 +83,19 @@ const LoginForm = () => {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                 />
               </div>
             </div>
-            {error && (
-              <div className="text-red-600 mt-2">
-                <p>{error}</p>
-              </div>
-            )}
-            {success && (
-              <div className="text-green-600 mt-2">
-                <p>{success}</p>
-              </div>
-            )}
           </form>
         </CardContent>
         <CardFooter>
-          <Button className="w-full bg-blue-600" type="submit" onClick={handleSubmit}>
+          <Button
+            className="w-full bg-blue-600"
+            type="submit"
+            onClick={handleSubmit}
+          >
             Login
           </Button>
         </CardFooter>
