@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,15 +8,13 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-
-import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const DialogForm = () => {
+const DialogForm = ({ open, onOpenChange, selectedPatient, onSave, isEdit }) => {
   const [formData, setFormData] = useState({
     name: "",
     dob: "",
@@ -25,6 +24,12 @@ const DialogForm = () => {
     description: "",
   });
 
+  useEffect(() => {
+    if (selectedPatient) {
+      setFormData(selectedPatient);
+    }
+  }, [selectedPatient]);
+
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.id]: event.target.value });
   };
@@ -33,37 +38,46 @@ const DialogForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/patients",
-        formData
-      );
-      toast.success(response.data.message);
+      const response = isEdit
+        ? await axios.put(
+            `http://localhost:3000/api/patients/${selectedPatient.id}`,
+            formData
+          )
+        : await axios.post("http://localhost:3000/api/patients", formData);
 
-      // Reset form data
-      setFormData({
-        name: "",
-        dob: "",
-        phone: "",
-        email: "",
-        address: "",
-        description: "",
-      });
+      toast.success(response.data.message);
+     
+
+      // Reset form data if creating a new patient
+      if (!isEdit) {
+        setFormData({
+          name: "",
+          dob: "",
+          phone: "",
+          email: "",
+          address: "",
+          description: "",
+        });
+      }
+
+      onSave(); // Call onSave to refresh the patient list
+      onOpenChange(false); // Close the dialog
     } catch (err) {
       console.error(err);
-    //   toast.error(err.response?.data.message || "An error occurred");
+      toast.error(err.response?.data.message || "An error occurred");
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger>
-        <Button>Add Patient</Button>
+        <Button>{isEdit ? "Edit Patient" : "Add Patient"}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Profile</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Profile" : "Create New Profile"}</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new profile.
+            {isEdit ? "Edit the details below." : "Fill in the details below to create a new profile."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
