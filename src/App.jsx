@@ -1,11 +1,16 @@
 import "./App.css";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { Dashboard } from "./pages/Dashboard";
 import Login from "./pages/Login";
 
 function App() {
   return (
-    <>
-      <Login />
-    </>
+    <TooltipProvider>
+      <>
+        {/* <Login /> */}
+        <Dashboard />
+      </>
+    </TooltipProvider>
   );
 }
 
