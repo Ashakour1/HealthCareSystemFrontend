@@ -15,7 +15,7 @@ import { Input } from "./ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const DialogComponent = () => {
+const DialogForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     dob: "",
@@ -34,7 +34,7 @@ const DialogComponent = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000//api/patients",
+        "http://localhost:3000/api/patients",
         formData
       );
       toast.success(response.data.message);
@@ -50,7 +50,7 @@ const DialogComponent = () => {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "An error occurred");
+    //   toast.error(err.response?.data.message || "An error occurred");
     }
   };
 
@@ -129,4 +129,4 @@ const DialogComponent = () => {
   );
 };
 
-export default DialogComponent;
+export default DialogForm;

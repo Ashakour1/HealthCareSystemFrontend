@@ -1,5 +1,5 @@
-import { Image } from "lucide-react"
-import { Link } from "lucide-react"
+import { Image } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   File,
   Home,
@@ -14,9 +14,9 @@ import {
   Settings,
   ShoppingCart,
   Users2,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,8 +24,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -42,9 +42,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Table,
   TableBody,
@@ -52,20 +52,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+import DialogForm from "../components/Dialog";
 
-export function Dashboard() {
+const Dashboard = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -169,7 +165,7 @@ export function Dashboard() {
                   className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                 >
                   <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-                  <span className="sr-only">Acme Inc</span>
+                  <span className="sr-only">HealthCare Appointment</span>
                 </Link>
                 <Link
                   href="#"
@@ -301,12 +297,8 @@ export function Dashboard() {
                     Export
                   </span>
                 </Button>
-                <Button size="sm" className="h-8 gap-1">
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Add Product
-                  </span>
-                </Button>
+                <DialogForm size="sm" className="h-8 gap-1"/>
+                 
               </div>
             </div>
             <TabsContent value="all">
@@ -347,7 +339,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -392,7 +384,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -437,7 +429,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -482,7 +474,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -527,7 +519,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -572,7 +564,7 @@ export function Dashboard() {
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src="/placeholder.svg"
+                            src=""
                             width="64"
                           />
                         </TableCell>
@@ -626,5 +618,7 @@ export function Dashboard() {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Dashboard;
