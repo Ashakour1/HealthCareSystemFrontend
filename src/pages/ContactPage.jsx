@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -18,6 +18,9 @@ export default function ContactPage() {
 
   // Loading state
   const [loading, setLoading] = useState(false);
+
+  // Ref for the form
+  const form = useRef();
 
   // Clear the form data
   const clearForm = () => {
@@ -57,7 +60,7 @@ export default function ContactPage() {
   };
 
   // Function to handle form submission
-  const handleSubmit = async (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
 
     // Validation check
@@ -67,20 +70,13 @@ export default function ContactPage() {
 
     setLoading(true);
 
-    const templateParams = {
-      to_email: formData.email,
-      to_name: `${formData.firstName} ${formData.lastName}`,
-      from_name: "Eventify", // Replace with your company or dynamic value
-      message: formData.message,
-    };
-
     try {
       // Sending the form data via emailjs
-      await emailjs.send(
-        "your_service_id", // Replace with your service ID
-        "your_template_id", // Replace with your template ID
-        templateParams,
-        "your_user_id" // Replace with your user ID
+      await emailjs.sendForm(
+        "service_9qe1hzc", // Replace with your service ID
+        "template_232zty2", // Replace with your template ID
+        form.current,
+        "46aiqSBPHs4x5ZgB1" // Replace with your user ID
       );
 
       toast.success("Message sent successfully!");
@@ -139,7 +135,7 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="rounded-lg bg-background shadow-lg">
-              <form className="rounded-lg p-8" onSubmit={handleSubmit}>
+              <form ref={form} className="rounded-lg p-8" onSubmit={sendEmail}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label htmlFor="firstName" className="block text-gray-700">
@@ -247,7 +243,7 @@ export default function ContactPage() {
                 </div>
                 <Button
                   type="submit"
-                  className="bg-customBlue w-full text-white px-6 py-2 rounded shadow hover:bg-gray-800"
+                  className="bg-black w-full text-white px-6 py-2 rounded shadow hover:bg-gray-800"
                 >
                   {loading ? (
                     <svg

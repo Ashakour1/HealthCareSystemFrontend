@@ -20,6 +20,7 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
     email: "",
     title: "",
     phone: "",
+    description: "",
   });
 
   useEffect(() => {
@@ -33,6 +34,7 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
         email: "",
         title: "",
         phone: "",
+        description: "",
       });
     }
   }, [selectedDoctor]);
@@ -114,6 +116,16 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
                 value={doctor.phone}
                 onChange={handleChange}
                 placeholder="Doctor Phone"
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Input
+                id="description"
+                name="description"
+                value={doctor.description}
+                onChange={handleChange}
+                placeholder="Doctor Description"
               />
             </div>
             <DialogFooter>
