@@ -11,20 +11,19 @@ import {
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave, isEdit }) => {
   const [appointment, setAppointment] = useState({
-    patientId: "",
-    doctorId: "",
+    doctor_id: "",
+    patient_id: "",
     address: "",
     appointmentDate: "",
-    status: "",
+    status: "scheduled",
   });
-  const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [patients, setPatients] = useState([]);
 
   useEffect(() => {
     if (selectedAppointment) {
@@ -33,37 +32,29 @@ const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave
       });
     } else {
       setAppointment({
-        patientId: "",
-        doctorId: "",
+        doctor_id: "",
+        patient_id: "",
         address: "",
         appointmentDate: "",
-        status: "",
+        status: "scheduled",
       });
     }
   }, [selectedAppointment]);
 
   useEffect(() => {
-    fetchPatients();
-    fetchDoctors();
+    const fetchDoctorsAndPatients = async () => {
+      try {
+        const doctorsResponse = await axios.get("http://localhost:3000/api/doctors");
+        const patientsResponse = await axios.get("http://localhost:3000/api/patients");
+        setDoctors(doctorsResponse.data);
+        setPatients(patientsResponse.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchDoctorsAndPatients();
   }, []);
-
-  const fetchPatients = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/api/patients");
-      setPatients(response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/api/doctors");
-      setDoctors(response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,14 +64,13 @@ const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = isEdit
-        ? await axios.put(
-            `http://localhost:3000/api/appointments/${selectedAppointment.id}`,
-            appointment
-          )
-        : await axios.post("http://localhost:3000/api/appointments", appointment);
-
-      toast.success(response.data.message);
+      if (isEdit) {
+        await axios.put(`http://localhost:3000/api/appointments/${selectedAppointment.id}`, appointment);
+      } else {
+        const { id, ...newAppointment } = appointment; // Remove the id field for new appointments
+        await axios.post("http://localhost:3000/api/appointments", newAppointment);
+      }
+      toast.success(isEdit ? "Appointment updated successfully" : "Appointment added successfully");
       onSave();
       onOpenChange(false);
     } catch (err) {
@@ -104,30 +94,36 @@ const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="patientId">Patient</Label>
-              <Select name="patientId" value={appointment.patientId} onChange={handleChange}>
-                <SelectTrigger>
-                  {patients.map((patient) => (
-                    <SelectItem key={patient.id} value={patient.id}>
-                      {patient.name}
-                    </SelectItem>
-                  ))}
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+              <Label htmlFor="doctor_id">Doctor</Label>
+              <select
+                id="doctor_id"
+                name="doctor_id"
+                value={appointment.doctor_id}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Select a Doctor</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    {doctor.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
-              <Label htmlFor="doctorId">Doctor</Label>
-              <Select name="doctorId" value={appointment.doctorId} onChange={handleChange}>
-                <SelectTrigger>
-                  {doctors.map((doctor) => (
-                    <SelectItem key={doctor.id} value={doctor.id}>
-                      {doctor.name}
-                    </SelectItem>
-                  ))}
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+              <Label htmlFor="patient_id">Patient</Label>
+              <select
+                id="patient_id"
+                name="patient_id"
+                value={appointment.patient_id}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Select a Patient</option>
+                {patients.map((patient) => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <Label htmlFor="address">Address</Label>
@@ -156,7 +152,7 @@ const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave
                 name="status"
                 value={appointment.status}
                 onChange={handleChange}
-                placeholder="Status"
+                placeholder="Appointment Status"
               />
             </div>
             <DialogFooter>

@@ -14,32 +14,51 @@ import { Input } from "./ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }) => {
-  const [doctor, setDoctor] = useState({
-    name: "",
-    email: "",
-    title: "",
-    phone: "",
+const DialogFormAppointment = ({ open, onOpenChange, selectedAppointment, onSave, isEdit }) => {
+  const [appointment, setAppointment] = useState({
+    doctor_id: "",
+    patient_id: "",
+    address: "",
+    appointmentDate: "",
+    status: "",
   });
+  const [doctors, setDoctors] = useState([]);
+  const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    if (selectedDoctor) {
-      setDoctor({
-        ...selectedDoctor,
+    if (selectedAppointment) {
+      setAppointment({
+        ...selectedAppointment,
       });
     } else {
-      setDoctor({
-        name: "",
-        email: "",
-        title: "",
-        phone: "",
+      setAppointment({
+        doctor_id: "",
+        patient_id: "",
+        address: "",
+        appointmentDate: "",
+        status: "",
       });
     }
-  }, [selectedDoctor]);
+  }, [selectedAppointment]);
+
+  useEffect(() => {
+    const fetchDoctorsAndPatients = async () => {
+      try {
+        const doctorsResponse = await axios.get("http://localhost:3000/api/doctors");
+        const patientsResponse = await axios.get("http://localhost:3000/api/patients");
+        setDoctors(doctorsResponse.data);
+        setPatients(patientsResponse.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchDoctorsAndPatients();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDoctor((prev) => ({ ...prev, [name]: value }));
+    setAppointment((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -47,10 +66,10 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
     try {
       const response = isEdit
         ? await axios.put(
-            `http://localhost:3000/api/doctors/${selectedDoctor.id}`,
-            doctor
+            `http://localhost:3000/api/appointments/${selectedAppointment.id}`,
+            appointment
           )
-        : await axios.post("http://localhost:3000/api/doctors", doctor);
+        : await axios.post("http://localhost:3000/api/appointments", appointment);
 
       toast.success(response.data.message);
       onSave();
@@ -64,56 +83,77 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger>
-        <Button variant="outline">{isEdit ? "Edit Doctor" : "Add Doctor"}</Button>
+        <Button variant="outline">{isEdit ? "Edit Appointment" : "Add Appointment"}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Doctor" : "Add Doctor"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Appointment" : "Add Appointment"}</DialogTitle>
           <DialogDescription>
-            {isEdit ? "Edit the details below." : "Fill in the details below to add a new doctor."}
+            {isEdit ? "Edit the details below." : "Fill in the details below to add a new appointment."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={doctor.name}
+              <Label htmlFor="doctor_id">Doctor</Label>
+              <select
+                id="doctor_id"
+                name="doctor_id"
+                value={appointment.doctor_id}
                 onChange={handleChange}
-                placeholder="Doctor Name"
+              >
+                <option value="" disabled>Select a Doctor</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    {doctor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="patient_id">Patient</Label>
+              <select
+                id="patient_id"
+                name="patient_id"
+                value={appointment.patient_id}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Select a Patient</option>
+                {patients.map((patient) => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="address">Address</Label>
+              <Input
+                id="address"
+                name="address"
+                value={appointment.address}
+                onChange={handleChange}
+                placeholder="Appointment Address"
               />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="appointmentDate">Appointment Date</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                value={doctor.email}
+                id="appointmentDate"
+                name="appointmentDate"
+                type="datetime-local"
+                value={appointment.appointmentDate}
                 onChange={handleChange}
-                placeholder="Doctor Email"
               />
             </div>
             <div>
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="status">Status</Label>
               <Input
-                id="title"
-                name="title"
-                value={doctor.title}
+                id="status"
+                name="status"
+                value={appointment.status}
                 onChange={handleChange}
-                placeholder="Doctor Title"
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={doctor.phone}
-                onChange={handleChange}
-                placeholder="Doctor Phone"
+                placeholder="Appointment Status"
               />
             </div>
             <DialogFooter>
@@ -126,4 +166,4 @@ const DialogFormDoctor = ({ open, onOpenChange, selectedDoctor, onSave, isEdit }
   );
 };
 
-export default DialogFormDoctor;
+export default DialogFormAppointment;

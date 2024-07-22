@@ -102,7 +102,11 @@ const DashboardHeader = () => {
             <Link to="/doctors">Doctors</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-       
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link to="/appointment">Appointment</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
     <div className="relative ml-auto flex-1 md:grow-0">

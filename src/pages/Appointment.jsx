@@ -21,6 +21,8 @@ const Appointment = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -33,6 +35,7 @@ const Appointment = () => {
 
   useEffect(() => {
     fetchAppointments();
+    fetchDoctorsAndPatients();
   }, []);
 
   const fetchAppointments = async () => {
@@ -42,6 +45,30 @@ const Appointment = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const fetchDoctorsAndPatients = async () => {
+    try {
+      const [doctorsResponse, patientsResponse] = await Promise.all([
+        axios.get("http://localhost:3000/api/doctors"),
+        axios.get("http://localhost:3000/api/patients"),
+      ]);
+      setDoctors(doctorsResponse.data);
+      setPatients(patientsResponse.data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch doctors or patients");
+    }
+  };
+
+  const getDoctorName = (id) => {
+    const doctor = doctors.find((doctor) => doctor.id === id);
+    return doctor ? doctor.name : "Unknown Doctor";
+  };
+
+  const getPatientName = (id) => {
+    const patient = patients.find((patient) => patient.id === id);
+    return patient ? patient.name : "Unknown Patient";
   };
 
   const handleEdit = (appointment) => {
@@ -69,9 +96,9 @@ const Appointment = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full">
       <Aside />
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <div className="flex flex-col flex-1 sm:gap-4 sm:py-4 sm:pl-14">
         <DashboardHeader />
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <div className="flex items-center">
@@ -93,17 +120,19 @@ const Appointment = () => {
                 <TableHead className="hidden md:table-cell">Address</TableHead>
                 <TableHead className="hidden md:table-cell">Appointment Date</TableHead>
                 <TableHead className="hidden md:table-cell">Status</TableHead>
-                <TableHead className="hidden md:table-cell">Actions</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {appointments.map((appointment) => (
                 <TableRow key={appointment.id}>
-                  <TableCell>{appointment.patientName}</TableCell>
-                  <TableCell>{appointment.doctorName}</TableCell>
-                  <TableCell>{appointment.address}</TableCell>
-                  <TableCell>{new Date(appointment.appointmentDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{appointment.status}</TableCell>
+                  <TableCell>{getPatientName(appointment.patientId)}</TableCell>
+                  <TableCell>{getDoctorName(appointment.doctorId)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{appointment.address}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {new Date(appointment.appointmentDate).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">{appointment.status}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
