@@ -22,7 +22,6 @@ function App() {
           </>} />
           <Route path="/doctors" element={<>
           
-          <DashboardHeader/>
           <Doctor/>
           </>} />
         </Routes>
