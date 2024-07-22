@@ -1,6 +1,8 @@
 import "./App.css";
 import Aside from "./components/Aside";
 import DashboardHeader from "./components/DashboardHeader";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 
 import Dashboard from "./pages/Dashboard";
 import Doctor from "./pages/Doctor";
@@ -22,9 +24,10 @@ function App() {
           </>} />
           <Route path="/doctors" element={<>
           
-          <DashboardHeader/>
           <Doctor/>
           </>} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </Router>
     </>
